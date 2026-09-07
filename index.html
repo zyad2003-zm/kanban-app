@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform Launch - Kanban Board</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-card">
+            <img src="logo-dark.svg" alt="Kanban Logo" class="login-logo">
+            <h1 class="login-title">Welcome to Kanban</h1>
+            <p class="login-subtitle">Sign in to manage your boards and tasks</p>
+            <button id="googleSignInBtn" class="google-signin-btn">
+                <svg class="google-icon" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#EA4335" d="M24 9.5c3.14 0 5.95 1.08 8.17 2.85l6.1-6.1C34.46 3.07 29.52 1 24 1 14.82 1 7.01 6.48 3.58 14.22l7.1 5.52C12.37 13.45 17.7 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.52 24.5c0-1.64-.15-3.22-.42-4.75H24v9h12.7c-.55 2.96-2.2 5.47-4.68 7.15l7.2 5.59C43.35 37.29 46.52 31.36 46.52 24.5z"/>
+                    <path fill="#FBBC05" d="M10.68 28.26A14.5 14.5 0 0 1 9.5 24c0-1.48.25-2.91.68-4.26l-7.1-5.52A23.94 23.94 0 0 0 0 24c0 3.87.93 7.53 2.58 10.78l8.1-6.52z"/>
+                    <path fill="#34A853" d="M24 47c5.52 0 10.15-1.83 13.53-4.96l-7.2-5.59c-1.83 1.23-4.17 1.96-6.33 1.96-6.3 0-11.63-3.95-13.32-9.48l-8.1 6.52C7.01 41.52 14.82 47 24 47z"/>
+                    <path fill="none" d="M0 0h48v48H0z"/>
+                </svg>
+                Sign in with Google
+            </button>
+            <p id="loginError" class="login-error"></p>
+        </div>
+    </div>
+    <div class="app-container" style="display:none">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <img src="logo-light.svg" alt="Kanban Logo" class="logo">
+                </div>
+                <div class="user-info" id="userInfo">
+                    <img id="userAvatar" class="user-avatar" src="" alt="User Avatar">
+                    <span id="userName" class="user-name"></span>
+                    <button id="signOutBtn" class="sign-out-btn" title="Sign Out">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <polyline points="16 17 21 12 16 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <line x1="21" y1="12" x2="9" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+                    
+            <div class="sidebar-content">
+                <h2 class="boards-title">ALL BOARDS (3)</h2>
+                <nav class="board-nav">
+                    <a href="#" class="board-link active">
+                        <img src="icon-board.svg" alt="Board Icon" class="board-icon">
+                        Platform Launch
+                    </a>
+                    <a href="#" class="board-link">
+                        <img src="icon-board.svg" alt="Board Icon" class="board-icon">
+                        Marketing Plan
+                    </a>
+                    <a href="#" class="board-link">
+                        <img src="icon-board.svg" alt="Board Icon" class="board-icon">
+                        Roadmap
+                    </a>
+                    <button class="board-link create-board-btn" id="createBoardBtn">
+                        <img src="icon-board.svg" alt="Board Icon" class="board-icon">
+                        Create New Board
+                    </button>                    
+                </nav>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="theme-toggle">
+                    <img src="icon-light-theme.svg" alt="Light Theme" class="theme-icon">
+                    <label class="switch">
+                        <input type="checkbox" id="themeToggle">
+                        <span class="slider"></span>
+                    </label>
+                    <img src="icon-dark-theme.svg" alt="Dark Theme" class="theme-icon">
+                </div>
+                <button class="hide-sidebar-btn" id="hideSidebarBtn">
+                    <img src="icon-hide-sidebar.svg" alt="Hide Sidebar" class="hide-sidebar-icon">
+                    Hide Sidebar
+                </button>
+            </div>                
+        </aside>
+
+        <!-- Show Sidebar Button (Visible when sidebar is hidden) -->
+        <div id="showSidebarBtn" class="show-sidebar-btn">
+            <img src="icon-show-sidebar.svg" alt="Show Sidebar">
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <!--hamburgerMenu-->
+                    <button id="hamburgerMenuBtn" class="hamburger-menu-btn">
+                        <img src="logo-mobile.svg" alt="Menu" class="hamburger-icon">
+                    </button>
+                <h1>Platform Launch</h1>
+                <div class="header-actions">
+                    <button id="addTaskBtn" class="button-primary">+ Add New Task</button>
+                    <div class="menu-dropdown">
+                        <button id="menuBtn" class="menu-button">
+                            <img src="icon-vertical-ellipsis.svg" alt="3 dots">
+                        </button>
+                        <div id="dropdownMenu" class="dropdown-content">
+                            <a href="#" id="editBoardBtn">Edit Board</a>
+                            <a href="#" id="deleteBoardBtn" class="danger">Delete Board</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="board">
+                <div class="column" data-status="todo">
+                    <h2 class="column-header">
+                        <span class="status-circle todo"></span> To Do (<span class="task-count">0</span>)
+                    </h2>
+                    <div class="tasks-container"></div>
+                </div>
+                <div class="column" data-status="doing">
+                    <h2 class="column-header">
+                        <span class="status-circle doing"></span> Doing (<span class="task-count">0</span>)
+                    </h2>
+                    <div class="tasks-container"></div>
+                </div>
+                <div class="column" data-status="done">
+                    <h2 class="column-header">
+                        <span class="status-circle done"></span> Done (<span class="task-count">0</span>)
+                    </h2>
+                    <div class="tasks-container"></div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Add Task Modal (Updated with Subtasks) -->
+    <div id="taskModal" class="modal">
+        <div class="modal-content">
+            <h2>Add New Task</h2>
+            <form id="taskForm">
+                <div class="form-group">
+                    <label for="taskTitle">Title</label>
+                    <input type="text" id="taskTitle" required placeholder="e.g. Take coffee break">
+                </div>
+                <div class="form-group">
+                    <label for="taskDescription">Description</label>
+                    <textarea id="taskDescription" placeholder="e.g. It's always good to take a break"></textarea>
+                </div>
+                <!-- Subtasks Section -->
+                <div class="form-group">
+                    <label>Subtasks</label>
+                    <div id="subtasksContainer">
+                        <!-- Subtasks will be dynamically added here -->
+                    </div>
+                    <button type="button" id="addSubtaskBtn" class="button-secondary">+ Add New Subtask</button>
+                </div>
+                <div class="form-group">
+                    <label for="taskDueDate">Due Date</label>
+                    <input type="date" id="taskDueDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="taskStatus">Status</label>
+                    <select id="taskStatus" required>
+                        <option value="todo">To Do</option>
+                        <option value="doing">Doing</option>
+                        <option value="done">Done</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="button-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="button-primary">Create Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Task Modal -->
+    <div id="viewTaskModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="viewTaskTitle" dir="auto"></h2>
+            </div>
+            <p id="viewTaskDescription" dir="auto">No description provided</p>
+            <div class="task-metadata">
+                <p>Due Date: <span id="viewTaskDueDate"></span></p>
+                <p>Status: <span id="viewTaskStatus"></span></p>
+                <div id="viewSubtasksContainer"></div>
+            </div>
+            <div class="modal-actions">
+                <button class="button-danger" onclick="deleteTask()">Delete</button>
+                <button class="button-secondary" onclick="closeViewModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create New Board Modal -->
+    <div id="createBoardModal" class="modal">
+        <div class="modal-content">
+            <h2>Add New Board</h2>
+            <form id="boardForm">
+                <div class="form-group">
+                    <label for="boardName">Board Name</label>
+                    <input type="text" id="boardName" required placeholder="e.g. Web Design">
+                </div>
+                <div class="form-group">
+                    <label>Board Columns</label>
+                    <div id="columnsContainer">
+                        <div class="column-input">
+                            <input type="text" value="Todo" name="columns[]" required>
+                            <button type="button" class="remove-column-btn">✕</button>
+                        </div>
+                        <div class="column-input">
+                            <input type="text" value="Doing" name="columns[]" required>
+                            <button type="button" class="remove-column-btn">✕</button>
+                        </div>
+                        <div class="column-input">
+                            <input type="text" value="Done" name="columns[]" required>
+                            <button type="button" class="remove-column-btn">✕</button>
+                        </div>
+                    </div>
+                    <button type="button" id="addColumnBtn" class="button-secondary">+ Add New Column</button>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="button-primary">Create New Board</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Board Modal -->
+    <div id="editBoardModal" class="modal">
+        <div class="modal-content">
+            <h2>Edit Board</h2>
+            <form id="editBoardForm">
+                <div class="form-group">
+                    <label for="editBoardName">Board Name</label>
+                    <input type="text" id="editBoardName" required placeholder="e.g. Web Design">
+                </div>
+                <div class="form-group">
+                    <label>Board Columns</label>
+                    <div id="editColumnsContainer">
+                        <!-- Columns will be dynamically added here -->
+                    </div>
+                    <button type="button" id="editAddColumnBtn" class="button-secondary">+ Add New Column</button>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="button-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Firebase SDK -->
+    <script type="module" src="firebase-auth.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
