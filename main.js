@@ -12,6 +12,7 @@ class TaskManager {
 
     addTask(task) {
         task.id = Date.now().toString();
+        task.order = this.tasks.length;
         this.tasks.push(task);
         this.saveTasks();
         return task;
@@ -34,9 +35,9 @@ class TaskManager {
     }
 
     getTasksByStatus(status) {
-        return this.tasks.filter(task => 
-            task.status === status && task.boardId === boardManager.currentBoardId
-        );
+        return this.tasks
+            .filter(task => task.status === status && task.boardId === boardManager.currentBoardId)
+            .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     }
 
     saveTasks() {
@@ -568,12 +569,10 @@ function setupDragAndDrop() {
         taskCard.addEventListener('dragstart', (e) => {
             taskCard.classList.add('dragging');
             e.dataTransfer.setData('text/plain', taskCard.dataset.taskId);
-            console.log("Dragging task:", taskCard.dataset.taskId);
         });
 
         taskCard.addEventListener('dragend', () => {
             taskCard.classList.remove('dragging');
-            console.log("Drag End");
         });
     });
 
@@ -581,6 +580,16 @@ function setupDragAndDrop() {
         container.addEventListener('dragover', (e) => {
             e.preventDefault();
             container.classList.add('drag-over');
+
+            const draggingCard = document.querySelector('.task-card.dragging');
+            if (!draggingCard) return;
+
+            const afterCard = getDragAfterElement(container, e.clientY);
+            if (afterCard) {
+                container.insertBefore(draggingCard, afterCard);
+            } else {
+                container.appendChild(draggingCard);
+            }
         });
 
         container.addEventListener('dragleave', () => {
@@ -593,20 +602,32 @@ function setupDragAndDrop() {
 
             const taskId = e.dataTransfer.getData('text/plain');
             const newStatus = container.parentElement.dataset.status;
+            if (!taskId || !newStatus) return;
 
-            console.log("Dropped Task:", taskId, "New Status:", newStatus);
+            // Update status
+            taskManager.updateTask(taskId, { status: newStatus });
 
-            if (taskId && newStatus) {
-                taskManager.updateTask(taskId, { status: newStatus });
-                loadTasks(); // Re-load tasks after updating
-                setupDragAndDrop(); // Rebind drag-and-drop after refresh
-            } else {
-                console.error("Drop failed: Task ID or New Status is missing");
-            }
+            // Save new order based on DOM position
+            Array.from(container.querySelectorAll('.task-card')).forEach((card, index) => {
+                taskManager.updateTask(card.dataset.taskId, { order: index });
+            });
+
+            loadTasks();
         });
     });
 }
-setupDragAndDrop(); // Reinitialize drag-and-drop events after tasks are loaded
+
+function getDragAfterElement(container, y) {
+    const cards = [...container.querySelectorAll('.task-card:not(.dragging)')];
+    return cards.reduce((closest, card) => {
+        const box = card.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+            return { offset, element: card };
+        }
+        return closest;
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
 
 // Initialize theme from localStorage
 function initializeTheme() {
