@@ -164,15 +164,19 @@ function loadTasks() {
     const currentBoard = boardManager.getBoardById(boardManager.currentBoardId);
     if (!currentBoard) return;
     
+    const columnColors = ['#49C4E5', '#8471F2', '#67E2AE', '#F4A261', '#E76F51', '#2A9D8F', '#E9C46A', '#A8DADC'];
+
     const boardElement = document.querySelector('.board');
-    boardElement.innerHTML = currentBoard.columns.map(status => `
+    boardElement.innerHTML = currentBoard.columns.map((status, index) => {
+        const color = columnColors[index % columnColors.length];
+        return `
         <div class="column" data-status="${status}">
             <h2 class="column-header">
-                <span class="status-circle ${status}"></span> ${status.toUpperCase()} (<span class="task-count">0</span>)
+                <span class="status-circle" style="background-color:${color}"></span> ${status.toUpperCase()} (<span class="task-count">0</span>)
             </h2>
             <div class="tasks-container"></div>
         </div>
-    `).join('');
+    `}).join('');
     
     document.querySelectorAll('.tasks-container').forEach(container => {
         const status = container.parentElement.dataset.status;
@@ -215,6 +219,12 @@ function updateTaskCounts() {
 
 // Modal Management
 function openModal() {
+    // Fill status dropdown with current board's columns
+    const currentBoard = boardManager.getBoardById(boardManager.currentBoardId);
+    const taskStatus = document.getElementById('taskStatus');
+    taskStatus.innerHTML = currentBoard.columns.map(col => 
+        `<option value="${col}">${col.charAt(0).toUpperCase() + col.slice(1)}</option>`
+    ).join('');
     taskModal.style.display = 'block';
 }
 
@@ -364,7 +374,11 @@ function setupSubtaskListeners() {
 
 // Column Management (for Create New Board Modal)
 function setupColumnListeners() {
-    document.getElementById('addColumnBtn').addEventListener('click', function () {
+    const addColumnBtn = document.getElementById('addColumnBtn');
+    const newBtn = addColumnBtn.cloneNode(true);
+    addColumnBtn.parentNode.replaceChild(newBtn, addColumnBtn);
+
+    newBtn.addEventListener('click', function () {
         const columnsContainer = document.getElementById('columnsContainer');
         
         const columnDiv = document.createElement('div');
@@ -397,7 +411,11 @@ function setupColumnListeners() {
 
 // Column Management (for Edit Board Modal)
 function setupEditColumnListeners() {
-    document.getElementById('editAddColumnBtn').addEventListener('click', function () {
+    const editAddColumnBtn = document.getElementById('editAddColumnBtn');
+    const newBtn = editAddColumnBtn.cloneNode(true);
+    editAddColumnBtn.parentNode.replaceChild(newBtn, editAddColumnBtn);
+
+    newBtn.addEventListener('click', function () {
         const columnsContainer = document.getElementById('editColumnsContainer');
         
         const columnDiv = document.createElement('div');
