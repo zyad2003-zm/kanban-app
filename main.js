@@ -29,7 +29,9 @@ class TaskManager {
     }
 
     getTasksByStatus(status) {
-        return this.tasks.filter(task => task.status === status);
+        return this.tasks.filter(task => 
+            task.status === status && task.boardId === boardManager.currentBoardId
+        );
     }
 
     saveTasks() {
@@ -458,6 +460,7 @@ function setupEventListeners() {
             description: document.getElementById('taskDescription').value,
             dueDate: document.getElementById('taskDueDate').value,
             status: document.getElementById('taskStatus').value,
+            boardId: boardManager.currentBoardId,
             subtasks: Array.from(document.querySelectorAll('#subtasksContainer input'))
                 .map(input => input.value)
                 .filter(value => value.trim() !== '')
