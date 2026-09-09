@@ -7,7 +7,9 @@ class TaskManager {
     }
 
     loadFromStorage(userId) {
-        this.tasks = JSON.parse(localStorage.getItem(`tasks_${userId}`)) || [];
+        const saved = JSON.parse(localStorage.getItem(`tasks_${userId}`)) || [];
+        // Filter out any invalid tasks
+        this.tasks = saved.filter(t => t.id && t.title && t.dueDate && t.dueDate !== 'Invalid Date');
     }
 
     addTask(task) {
@@ -604,12 +606,15 @@ function setupDragAndDrop() {
             const newStatus = container.parentElement.dataset.status;
             if (!taskId || !newStatus) return;
 
-            // Update status
+            // Update status of dragged task
             taskManager.updateTask(taskId, { status: newStatus });
 
-            // Save new order based on DOM position
+            // Save new order based on DOM position, skip invalid cards
             Array.from(container.querySelectorAll('.task-card')).forEach((card, index) => {
-                taskManager.updateTask(card.dataset.taskId, { order: index });
+                const id = card.dataset.taskId;
+                if (id && taskManager.getTaskById(id)) {
+                    taskManager.updateTask(id, { order: index });
+                }
             });
 
             loadTasks();
