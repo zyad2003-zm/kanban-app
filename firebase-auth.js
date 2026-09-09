@@ -68,10 +68,17 @@ onAuthStateChanged(auth, (user) => {
         userAvatar.src = user.photoURL || '';
         userAvatar.style.display = user.photoURL ? 'block' : 'none';
         userName.textContent = user.displayName || user.email;
+
+        // Load this user's data
+        currentUserId = user.uid;
+        taskManager.loadFromStorage(user.uid);
+        boardManager.loadFromStorage(user.uid);
+        initializeBoard();
     } else {
         loginScreen.style.display = 'flex';
         appContainer.style.display = 'none';
         userInfo.style.display = 'none';
+        currentUserId = null;
         resetSignInButton();
         loginError.textContent = '';
     }

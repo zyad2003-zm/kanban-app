@@ -1,8 +1,13 @@
 // Task Management
+let currentUserId = null;
 class TaskManager {
     constructor() {
-        this.tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        this.tasks = [];
         this.currentTaskId = null;
+    }
+
+    loadFromStorage(userId) {
+        this.tasks = JSON.parse(localStorage.getItem(`tasks_${userId}`)) || [];
     }
 
     addTask(task) {
@@ -35,7 +40,7 @@ class TaskManager {
     }
 
     saveTasks() {
-        localStorage.setItem('tasks', JSON.stringify(this.tasks));
+        localStorage.setItem(`tasks_${currentUserId}`, JSON.stringify(this.tasks));
         updateTaskCounts();
     }
 }
@@ -43,12 +48,17 @@ class TaskManager {
 // Board Management
 class BoardManager {
     constructor() {
-        this.boards = JSON.parse(localStorage.getItem('boards')) || [
+        this.boards = [];
+        this.currentBoardId = null;
+    }
+
+    loadFromStorage(userId) {
+        this.boards = JSON.parse(localStorage.getItem(`boards_${userId}`)) || [
             { id: '1', name: 'Platform Launch', columns: ['todo', 'doing', 'done'] },
             { id: '2', name: 'Marketing Plan', columns: ['todo', 'doing', 'done'] },
             { id: '3', name: 'Roadmap', columns: ['todo', 'doing', 'done'] }
         ];
-        this.currentBoardId = localStorage.getItem('currentBoardId') || '1'; // Default to the first board
+        this.currentBoardId = localStorage.getItem(`currentBoardId_${userId}`) || '1';
     }
 
     addBoard(board) {
@@ -76,8 +86,8 @@ class BoardManager {
     }
 
     saveBoards() {
-        localStorage.setItem('boards', JSON.stringify(this.boards));
-        localStorage.setItem('currentBoardId', this.currentBoardId);
+        localStorage.setItem(`boards_${currentUserId}`, JSON.stringify(this.boards));
+        localStorage.setItem(`currentBoardId_${currentUserId}`, this.currentBoardId);
         loadBoards();
         if (this.currentBoardId) {
             loadTasks();
@@ -609,7 +619,6 @@ function initializeTheme() {
 
 // Initialize the board when the page loads
 document.addEventListener('DOMContentLoaded', () => {
-    initializeBoard();
     initializeTheme();
 });
 
